@@ -1,1 +1,440 @@
 
+© 2025 Abdoallah Sharaf
+
+# Nextflow
+Honestly, running fastp once on each of the samples is super annoying. I guess we could generate a bash script to do it for us, but that would be not very easy and it would likely run in parallel, and we'd still have to manually take care of the directory structures for the results, and keep track of which versions of the software we used etc. etc. etc. And this was just for one bioinformatic tool! A typical pipeline may have upwards of 10 tools used in sequence, with the outputs combined in certain ways.
+
+What if I told you there was a better way?!
+
+There is! It's called [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html).
+
+### Hello Nextflow
+
+- As i'm a Nextflow ambassador, I'm going to use the official training hands-on [Hello Nextflow](https://training.nextflow.io/hello_nextflow/)
+
+- Because of the time limitation I will go through Parts 1, 5, and 6 of the hands-on.
+
+- Also, double-check the other nextflow sub-commands such as ````clean````, ````list```` and options such as ````-bg```` 
+
+<details>
+<summary>Hint Hello Containers</summary>
+
+````
+#!/usr/bin/env nextflow
+
+params.character = 'turkey'
+
+// Generate ASCII art with cowpy
+process cowpy {
+    container 'community.wave.seqera.io/library/cowpy:1.1.5--3db457ae1977a273'
+    publishDir 'results', mode: 'copy
+    input:
+        val character
+    output:
+        path "cowpy.txt"
+    script:
+    """
+    cowpy "Hello Containers" -c $character > cowpy.txt
+    """
+}
+workflow {
+    cowpy(params.character)
+}
+````
+</details>
+
+# nf-core
+
+If you are not generally excited by Nextflow or programming, then the good news is that it will still be working with Nexflow by using the developed pipelines at [nf-core](https://nf-co.re/). nf-core is a community effort to collect a curated set of analysis pipelines built using Nextflow. It provides highly automated and optimized pipelines that guarantee the reproducibility of results for their users. Single users profit from portable, documented, and easy-to-use workflows.
+
+Sure, not all analysis pipelines are available including genome assembly, but the good news is that a couple of raw reads-related pipelines are available, which can be used for our data. Then, let's take a look at it. 
+
+> **Exercise**: You will find that there is considerable documentation on nf-core [here](https://nf-co.re/docs/usage/introduction). Also, please read carefully documentation of the nf-core [taxprofiler pipeline](https://nf-co.re/taxprofiler/1.2.2/)
+
+i believe that after reading the pipeline documentation, you can run it by yourself but here i will brief some hands-out
+
+Let's start from the very beginning using nf-core. We can use a pipeline line called [fetching](https://nf-co.re/fetchngs/1.12.0) to download the raw data from GeneBank. One advantage of using this pipeline is that it will prepare the metadata file for us after activating the falg ````--nf_core_pipeline taxprofiler````
+
+
+> **Exercise** Try to download our sequencing raw reads for Aiptasia, which should now be available in the NCBI Sequence Read Archive (SRA) under the accession ```SRR32136522``` using the fetching pipeline. Feel free to download any raw reads that you may interested in.
+- if somehow it doesn't work or takes a longer time then we going to use this one ````SRX27526683```` for the Gram-positive bacteria *Bordetella pertussis*.
+
+````bash
+nextflow run nf-core/fetchngs  -profile conda --input input.csv --nf_core_pipeline taxprofiler --outdir raw_reads
+````
+
+- Did you notice that we can use the conda package management system by using the flag ````-profile conda````, another advantage of using Nextflow. 
+
+- Now, let's run the nf-core [taxprofiler pipeline](https://nf-co.re/taxprofiler/1.2.2/), but before we need to download a database that important to taxnomy classy the reads. For simplicity, we will download the smallest database, the Viral collection of [Kraken2 databases](https://benlangmead.github.io/aws-indexes/k2).
+
+````bash
+wget https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20241228.tar.gz
+````
+- Then, you need to create a ````databases.csv```` file as following.
+
+````
+tool,db_name,db_params,db_path
+kraken2,db2,--quick,/workspace/gitpod/hello-nextflow/k2_viral_20241228.tar.gz
+````
+
+- Finally run the pipeline
+
+````bash
+nextflow run nf-core/taxprofiler -r 1.2.2  -profile docker --input raw_reads/samplesheet/samplesheet.csv --databases ./databases.csv --outdir Aip_taxpro --run_kraken2  --run_krona --perform_longread_qc --perform_longread_hostremoval False --save_analysis_ready_fastqs
+````
+
+- This command will produce massive intermediate files, so running on a Gitpode instance may not be possible. So I already set and tested it and placed the results ````/home/bio16840/Results/Aip_taxpro/```` on SequAna's server, i used kraken2 ```core_nt Database``` for this run.
+
+
+> **Exercise**: While we wait let's try to generate the DAG graph for ````nf-core/fetchngs```` and ````nf-core/taxprofiler```` pipelines.
+
+- From now and onward, we going to work on the SequAna server.
+
+### Genome assembly and annotation workflow 
+```mermaid
+flowchart TD
+    A[Sequencing reads pre-processing and quality control] --> B[De-novo assembly using ONT reads]
+    B --> C[Genome assembly assessment]
+    C --> D[Assembling organelle genomes]
+    C --> E[Identification and masking of DNA repeats]
+    E --> F[Gene prediction]
+    F --> G[Functional annotation]
+```
+
+
+
+# Sequencing reads pre-processing and quality control
+> **Exercise:** Check the mini-ONT output directory structure and run's report. Let's see if you'd be able to use your CL skills to navigate through the output directory, check data size, and final merge sequencing raw reads.
+
+
+- from now on, i will adopt the strategy of "one environment per step", if you work on your PC then you are supposed to:
+    
+    - create your environment of each step using the packages list file ```conda_packages.yml``` which is placed in the ```Results``` directory. 
+      You can install the list of packages using:
+      ````bash
+      mamba env create -n [eviroment_name] -f conda_packages.yml
+      ````
+     
+    - I placed the pre-produced results for each step to save time. Also, i created all the necessary environments, you need just to activate them following the tutorial.   
+ 
+
+> **Exercise:** Check the number of the raw reads 
+
+
+- As we dealing with a very high number of reads, then I subset ```400000``` of reads so that you can run each analysis over it while the pre-produced results are based on the full set of data. Then don't expect that all analysis would work for you.
+
+> **Exercise:** Create a directory with your name and create a symlink to the subsetted reads ```raw_ONT/Aip_sub_400K.fastq.gz```.
+
+## Quality Control: 
+
+Assess the quality of the raw nanopore reads using tools like FastQC or NanoPlot to identify any issues needing attention.
+
+- We will Use [NanoPlot](https://github.com/wdecoster/NanoPlot) to test the quality of the sequencing read. 
+
+````bash
+mamba activate qc_env
+````
+Running time: 25m47,291s 
+
+````bash
+NanoPlot --fastq [raw_reads].fastq.gz --maxlength 40000 --plots dot --legacy hex -o nanoplot
+````
+> **Exercise:** Check out some of the .png plots and the contents of ```NanoStats.txt```. Also, download ```NanoPlot-report.html``` for both files to your local computer and answer the following questions:
+
+A. How many reads are in the files?
+
+B. What are the average read lengths? What does this tell us about the quality?
+
+C. What is the average base quality and what kind of accuracy do we expect?
+
+
+<details>
+<summary>Hint</summary>
+
+```
+error probability (p) =10^(−Q/10) ×100%
+  Where: Q is the Quality Value.
+```
+</details>
+
+## Adapter Removal using PoreChop: 
+
+(execution time: 156m30,495s)
+````bash
+porechop -i [raw_reads].fastq.gz -o [clean_reads].fq --discard_middle
+
+gzip [clean_reads].fq
+````
+
+> **Exercise:** Check the read quality after adapter removal and download the html files from the server. do you notice differences?
+
+# Genome Kmer profiling
+
+- Usually, this is for short-reads or high-accurate long reads as "HiFi technology" but let's give it a try.
+
+- The developer of [Smudgeplot](https://github.com/KamilSJaron/smudgeplot), [Kamil S. Jaron](https://kamilsjaron.github.io/) supports us with a [full tuterial](https://docs.google.com/presentation/d/1cZXcdeurt3YGVvNdSTlFaIBhFRHWXFbaQHcu7y64zJY/edit#slide=id.g25ff9944340_0_633) about Smudgeplot but I share here i used profile Kmer using [genomescope2.0](https://github.com/tbenavi1/genomescope2.0).
+
+
+-  First, we need to compute the histogram of k-mer frequencies. For this, we will use [FastK](https://github.com/thegenemyers/FASTK),  but you can use[KMC](http://sun.aei.polsl.pl/REFRESH/index.php?page=projects&project=kmc&subpage=download), or [jellyfish](http://www.genome.umd.edu/jellyfish.html).
+
+````bash
+mamba activate kmer_env
+mkdir Aip_ONT_GS
+FastK -v -t10 -k21 -M16 -T4 Aip_sub_400K.fastq.gz -NAip_ONT_GS/kmcdb
+Histex -G Aip_ONT_GS/kmcdb > Aip_ONT_GS/kmer_k21.hist
+````
+- The next step is to  run the modeling with the R script ```genomescope.R```
+````bash 
+../Results/Kmer/software/genomescope2.0/genomescope.R -i Aip_ONT_GS/kmer_k21.hist -o Aip_ONT_GS -k 21
+````
+ 
+> **Exercise:** Download the output folder ```Aip_ONT_GS``` from the ```Results/Kmer``` directory and dicuss the plots.
+
+- Also let's try generating a smudgeplot v0.4.0
+
+````bash
+mkdir Aip_ONT_smudge
+FastK -v -t4 -k21 -M16 -T4 Aip_sub_400K.fastq.gz -NAip_ONT_smudge/FastK_Table (or you can use the kmcdb from previous analysis) 
+smudgeplot.py hetmers -L 100 -t 4 -o Aip_ONT_smudge/kmerpairs --verbose Aip_ONT_smudge/FastK_Table
+smudgeplot.py all -cov_min 100 -cov_max 200 -o Aip_ONT_smudge/Aip -t "Exaiptasia diaphana" Aip_ONT_smudge/kmerpairs_text.smu
+````
+> **Exercise:** Download the output folder ```Aip_ONT_smudge``` from the ```Results/Kmer``` directory and dicuss the plots.
+
+
+# De-novo assembly using ONT reads
+We will use [Flye assemblyer](https://github.com/fenderglass/Flye) for this task  
+- the Aiptasia genome size 394 Mega Base Pairs according to [Genomes on a Tree](https://goat.genomehubs.org/search?query=tax_name%28Aiptasia%29&result=taxon&includeEstimates=true&summaryValues=count&taxonomy=ncbi#tax_name(Aiptasia)) but this information based ansectory prediction. The following studes claims that it's arround 250-300 Mbp, i will consider the average 275 Mb
+
+- [Baumgarten](https://www.pnas.org/doi/epdf/10.1073/pnas.1513318112)
+- [Zimmermann](https://www.biorxiv.org/content/10.1101/2020.10.30.359448v1.full)
+
+## Flye
+- we going to try three different setups for flye and let's see the differences
+> **Exercise:** Double-check the log file for each run. Go to the software page and try to understand the difference between the three options.
+
+````bash
+mamba activate assem_env
+````
+
+Running time: 156m9,730s
+
+````bash
+flye --nano-hq  Aip_clean.fq.gz --genome-size 275m --out-dir aip_flye_hq --scaffold
+````
+Running time: 185m47,878s
+````bash
+flye --nano-corr  Aip_clean.fq.gz --genome-size 275m --out-dir aip_flye_corr --scaffold
+````
+
+Running time: 184m37,942s
+
+````bash
+flye --nano-raw  Aip_clean.fq.gz --genome-size 275m --out-dir aip_flye_raw --scaffold
+````
+
+
+- It's recommended to use different assemblers on your data to compare assembles, CANU, Unicycler, or MaSuRCA are popular options but I will run CANU and try a new assembler NECAT
+
+## [NECAT](https://github.com/xiaochuanle/NECAT)
+- The software installed from the source and placed in the path ```/home/bio16840/Results/Assembly/software/NECAT/Linux-amd64/bin/```
+- first, we need to create a configuration file
+
+````bash
+/home/bio16840/Results/Assembly/software/NECAT/Linux-amd64/bin/necat.pl config aip_config.txt 
+````
+- put the clean read path in file ```read_list.txt```
+- you need to edit the following information using any text editor
+````bash
+PROJECT=Aip_NECAT
+ONT_READ_LIST=/home/bio16840/Abdo/read_list.txt
+GENOME_SIZE=275000000
+THREADS=1
+MIN_READ_LENGTH=1000
+````
+
+- Then run the reads correction step
+
+running time: 125m49,472s
+````bash
+/home/bio16840/Results/Assembly/software/NECAT/Linux-amd64/bin/necat.pl correct aip_config.txt 
+````
+- The pipeline only corrects the longest 40X raw reads. The corrected reads are in the files ```Results/Assembly/aip_NECT/NECT_out/1-consensus/cns_iter${NUM_ITER}/cns.fasta```. The longest 30X corrected reads are extracted for assembly, which are in the file ```Results/Assembly/aip_NECT/NECT_out/1-consensus/cns_final.fasta```.
+
+- Now, time for assembly
+Running time: 53m24,029s
+````bash
+/home/bio16840/Results/Assembly/software/NECAT/Linux-amd64/bin/necat.pl assemble aip_config.txt 
+
+````
+- The assembled contigs are in the file ```Results/Assembly/aip_NECT/NECT_out/4-fsa/contigs.fasta```.
+
+- Finally, contigs can be bridged (scaffolded) with
+Running time: 4m30,344s
+````bash
+/home/bio16840/Results/Assembly/software/NECAT/Linux-amd64/bin/necat.pl bridge aip_config.txt 
+````
+- The bridged contigs are in the file ```Results/Assembly/aip_NECT/NECT_out/6-bridge_contigs/bridged_contigs.fasta```.
+
+## [CANU](https://github.com/marbl/canu)
+Running time: 310m6,996s
+
+````bash
+canu -d Aip_canu -p Aip genomeSize=275m  -nanopore  -trimmed -correct -assemble Aip_clean.fq.gz gridOptions="--cpus=1"
+````
+
+## [hifiasm](https://github.com/chhylp123/hifiasm)
+- The tool was developed to work with HiFi reads but last year they released a new version to work with ONT reads Ultr-Long and simplex reads and it shows promising results. Then I will try it in the course this year.
+
+Running time: 42m28,033s
+````bash
+../Results/Assembly/software/hifiasm/hifiasm -t50 --ont --dual-scaf -o aip_asm aip_clean.fq.gz
+
+gfa_to_fasta.py Aip_asm.bp.p_ctg.gfa
+````
+# Genome assembly Polishing
+
+For the time limitation I will not do polishing as there are many ways to do it but here I will recommend some tools and how to run it.
+
+## [Dorado](https://github.com/abdo3a/dorado)
+
+This is a very good tool, and it was developed by Oxford Nanopore itself. Unfortunately, it requires GPU resources, so I was not able to test it.
+
+## [Medaka](https://github.com/nanoporetech/medaka) 
+- Also developed by Nanopore and uses long-reads.
+
+````bash
+minimap2 -ax map-ont -t 1 assembly.fasta reads_CLEAN.fq.gz > aligned_reads.sam
+samtools view -@ 50 -Sb aligned_reads.sam | samtools sort -@ 50 -o lreads.bam
+samtools index lreads.bam
+medaka_consensus -i lreads.bam -d assembly.fasta -o medaka_output -m r941_min_hac_g507 -t 1
+````
+
+## [Pilon](https://github.com/broadinstitute/pilon) 
+
+- This tool is very recommended in case of the availability of sequencing short reads from the same sample.
+
+````bash
+bowtie2-build  --threads 1 assembly.fasta genome_index
+bowtie2 -p 1 -x genome_index-1 reads_Illu_1.fastp.fastq.gz -2 reads_Illu_2.fastp.fastq.gz -S aligned_reads.sam
+samtools view -@1 -S -b aligned_reads.sam > aligned_reads.bam
+samtools sort -@1 -o sorted_reads.bam aligned_reads.bam
+samtools index sorted_reads.bam
+java -Xmx50G -jar pilon-1.24.jar --threads 1 --genome assembly.fasta  --frags sorted_reads.bam --output polished_assembly
+````
+# Scaffolding
+
+- This optional step then I will skip it also but give you hint about it
+
+## [Redundans](https://github.com/Gabaldonlab/redundans)
+
+- This tool can you any of short or long reads or both for scaffolding. 
+
+````bash
+docker run -v `pwd`/reads:/reads:rw -it cgenomics/redundans:latest /root/src/redundans/redundans.py -v -i reads/*_{1,2}.clean.fastq.gz -f polished_assembly.fasta -o reads/assembly_scaff -l reads/ont_clean.fq.gz --minimap2scaffold  -t 1 --runmerqury
+````
+
+# Genome assembly assessment
+
+````bash
+mamba activate eval_env 
+````
+## [gfastats](https://github.com/vgl-hub/gfastats)
+- Let's first get some assembly statistics to compare the different assemblies and decide which one will carry on the downstream analysis
+````bash
+gfastats [assembly].fasta 
+````
+
+> **Exercise:** Choose the best assembly to proceed. considering the balance between contiguity and completeness, aiming for a relatively small number of contigs with longer lengths that accurately represent the underlying genome structure and content.
+ 
+> **Exercise:** Compare the produced genome assembly statistics with the ones in [Baumgarten](https://www.pnas.org/doi/epdf/10.1073/pnas.1513318112)
+
+## [Bandage](https://rrwick.github.io/Bandage/)
+- Time to Visually check your assembly, Bandage is GUI software then you need to run it locally.
+- Download the software and retrieve the assembly graph file in [.gfa] or [.fasta] for the selected assembly format from the server.
+- Open file ----> choose the assembly graph file ----> Draw graph
+
+> **Exercise:** Export the visualized picture of the assembly.
+
+## busco 
+- You can run BUSCO on genome sequence but i prefer to do it based on the predicted protein sequences and the BTK tool will implement this information. However, you will  learn about these tools on the last day with Rob
+
+## Visualizing genome assembly cobionts by running BlobToolKit locally
+
+- BlobToolKit (BTK) is an amazing tool to assess assembly quality and visualize to check potential cobionts, a full handout for how to run it can be found [HERE](https://github.com/blobtoolkit/tutorials/tree/main/futurelearn). Also, a full online course for BTK is available as well for future reference [HERE](https://www.futurelearn.com/courses/eukaryotic-genome-assembly-how-to-use-blobtoolkit-for-quality-assessment). 
+For the second round, i used the new [nextflow pipeline](https://pipelines.tol.sanger.ac.uk/blobtoolkit/0.2.0) for BTK.
+
+- But i will try the very recent Nextflow version of the tool, for this we need to prepare the following first
+
+- converts sequencing data to CRAM format
+````bash
+minimap2 -ax map-ont assembly.fasta raw_ONT/20240206_Apo_Aip_02/Apo_fastq_pass.fastq.gz -t 10 | samtools sort -@10 -O BAM -o coverage.bam -
+samtools index coverage.bam
+samtools view -@ 10 -T assembly.fasta -C -o Aip.cram coverage.bam
+````
+- Prepare a metadata [.yaml] [file](https://github.com/SequAna-Ukon/SequAna_course2024/blob/main/Aip.yaml)  
+
+- Prepare a (csv) input [sheet](https://github.com/SequAna-Ukon/SequAna_course2024/blob/main/aip.csv)
+
+
+- run this next flow command
+
+Running time: 6h 20m 32s
+````bash
+nextflow run blobtoolkit/main.nf -profile docker --input aip.csv --fasta assembly.fasta --yaml aip.yaml --accession Aip --taxon "Aiptasia sp" --taxdump taxdump --blastp reference_proteomes.dmnd --blastn ncbi/nt/ --blastx eference_proteomes.dmnd
+````
+- it's a computational-extensive analysis so i did it for you but You still need to view the data, i will start hosting the data and all what you need to do is:
+
+````bash
+#log out the server
+exit
+# Start Google Chrome from the remote machine (server)
+ssh  -Y bio16840 google-chrome
+#add the local host address in the browse bar
+http://localhost:8001/view/aip_btk_be/dataset/aip_btk_be/blob
+````
+- Still, you can do this on your system but you need first downloading the analysis folder on your system.
+
+````bash
+mamba create -y -n btk python=3.9
+mamba activate btk
+pip install blobtoolkit
+blobtools view --remote aip_btk_be
+````
+
+> **Exercise:** Navigate the results and test the different options. which contigs we should filter out?
+
+- Double-check results after decontamination ````aip_btk_aft````
+
+> **Note:** [The NCBI Foreign Contamination Screen (FCS) tool](https://github.com/ncbi/fcs) is now publicly available. It is a suite of tools designed to identify and remove contaminant sequences from genome assemblies. 
+
+````bash
+../Results/Genome_Eval/software/run_fcsadaptor.sh --fasta-input Aip_final.fasta  --output-dir Aip_FCS --euk
+cat Aip_final.fasta | sudo python3 ../Results/Genome_Eval/software/fcs.py clean genome --action-report ./Aip_FCS/fcs_adaptor_report.txt --output Aip_clean.fasta --contam-fasta-out adap_contam.fasta
+python3 ../Results/Genome_Eval/software/fcs.py screen genome --fasta Aip_clean.fasta --out-dir ./gx_out/ --gx-db gxdb --tax-id 2652724
+cat Aip_clean.fasta  | python3 ../Results/Genome_Eval/software/fcs.py clean genome --action-report ./gx_out/blast.1582434.fcs_gx_report.txt --output Aip_fcs.fasta --contam-fasta-out contam.fasta
+````
+> **Exercise:** Explore the outputs ```fcs_adaptor_report.txt``` and ```Aip_final.2652724.fcs_gx_report.txt``` from ```Results/Genome_Eval/Aip_FCS```.
+
+# Assembling organelle genomes.
+- I will use [GetOrganelle](https://github.com/Kinggerm/GetOrganelle)
+- We could go for this step before exploring the assembly with the BTK tool as it will allow us to distinguish between cobionts and organelle contigs which is important during the assembly decontamination.
+
+- if the assembly graph file is not available, then you need to convert it from the assembly file (.fasta) 
+````bash
+gfastats ../Results/Assembly/aip_flye_raw/assembly.fasta -o gfa > Aip.contigs.gfa
+````
+- You need to re-activate the assembly environment once again, then configure the tool as we search for Animal mitogenome
+
+````bash
+mamba activate assem_env
+get_organelle_config.py --add  animal_mt
+````
+Running time: 2m41,742s
+
+- Finally, run the analysis
+
+````bash
+get_organelle_from_assembly.py -F animal_mt -g ../Results/Assembly/Aip.contigs.gfa -o animal_mt_out
+````
+> **Exercise:** visualize ```animal_mt_out/slimmed_assembly_graph.gfa``` and load ```animal_mt_out/slimmed_assembly_graph.csv``` to confirm the incomplete result.
+- If the result is nearly complete, you can try ```join_spades_fastg_by_blast.py``` to fill N-gaps in between contigs with a closely related reference.
