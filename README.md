@@ -22,7 +22,6 @@
 - 📑 [Cheat Sheet: Metabarcoding](materials/galaxy/cheatsheets/galaxy_metabarcoding.pdf)
 - 📝 [Tutorial](materials/galaxy/tutorial/galaxy_tutorial.md)
 
-
 ---
 
 ## Workshop Schedule
