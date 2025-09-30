@@ -3,7 +3,7 @@
 <p align="center"><b>Under African Biogenome Project (AfricaBP) Open Institute For Genomics And Bioinformatics – North African Workshop</b></p>
 
 <p align="center">Hosted at <b>Nile University, Egypt</b></p>
----
+
 
 ## Workshop Materials
 
