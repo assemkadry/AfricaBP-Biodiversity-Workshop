@@ -25,6 +25,6 @@
 ---
 
 ## Workshop Schedule
-📄 [Download Workshop Schedule (Word)](AfricaBP%20workshop%20Agenda_25.docx)
+📄 [Download Workshop Schedule (Word)](AfricaBP%20workshop%20Agenda_25.pdf)
 
 
