@@ -1,9 +1,8 @@
 <h1 align="center">Marine Bioinformatics Hackathon: Biodiversity, Genomics, and Nextflow Pipelines</h1>
 
-**Under African Biogenome Project (AfricaBP) Open Institute For Genomics And Bioinformatics – North African Workshop**
+<p align="center"><b>Under African Biogenome Project (AfricaBP) Open Institute For Genomics And Bioinformatics – North African Workshop</b></p>
 
-Hosted at **Nile University, Egypt** 
-
+<p align="center">Hosted at <b>Nile University, Egypt</b></p>
 ---
 
 ## Workshop Materials
