@@ -6,7 +6,7 @@ Hosted at Nile University, Egypt
 
 ---
 
-![Workshop Banner](<img width="1142" height="519" alt="Screenshot 2025-09-30 at 12 10 22 PM" src="https://github.com/user-attachments/assets/9972dcff-f235-4290-a03f-7c9684482348" />)
+![Workshop Banner](Screenshot%202025-09-30%20at%2012.10.22 PM.png)
 
 
 ---
