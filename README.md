@@ -10,16 +10,13 @@ Hosted at Nile University, Egypt
 
 ### 📂 Nextflow
 - 🎞️ [Slides](materials/nextflow/slides/nextflow_workshop.pptx)  
-- 📑 [Cheat Sheet: Commands](materials/nextflow/cheatsheets/nextflow_commands.pdf)  
-- 📑 [Cheat Sheet: nf-core](materials/nextflow/cheatsheets/nextflow_nfcore.pdf)  
+- 📑 [Cheat Sheet: nextflow](materials/nextflow/cheatsheets/nextflow_commands.pdf)  
+- 📑 [Cheat Sheet: nf-core](materials/nextflow/cheatsheets/nf-core_cheatsheet.pdf)  
 - 📝 [Tutorial (Wiki)](../../wiki/Nextflow-Tutorial)  
-- 📝 [nf-core Taxprofiler (Wiki)](../../wiki/nf-core-Taxprofiler)  
 
 ### 📂 Marine Bioinformatics with Galaxy
 - 🎞️ [Slides](materials/galaxy/slides/galaxy_workshop.pptx)  
-- 📑 [Cheat Sheet: Metabarcoding](materials/galaxy/cheatsheets/galaxy_metabarcoding.pdf)  
-- 📑 [Cheat Sheet: Metagenomics](materials/galaxy/cheatsheets/galaxy_metagenomics.pdf)  
-- 📝 [Tutorial (Wiki)](../../wiki/Galaxy-Tutorial)  
+- 📑 [Cheat Sheet: ](materials/galaxy/cheatsheets/galaxy_metabarcoding.pdf)  
 
 ---
 
