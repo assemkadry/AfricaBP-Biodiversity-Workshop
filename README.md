@@ -1,13 +1,8 @@
 # Marine Bioinformatics Hackathon: Biodiversity, Genomics, and Nextflow Pipelines
 
-**Under AFRICAN BIOGENOME PROJECT (AFRICABP) OPEN INSTITUTE FOR GENOMICS AND BIOINFORMATICS – NORTH AFRICAN WORKSHOP**
+**Under African Biogenome Project (AfricaBP) Open Institute For Genomics And Bioinformatics – North African Workshop**
 
-Hosted at Nile University, Egypt  
-
----
-
-![Workshop Banner](Screenshot%202025-09-30%20at%2012.10.22 PM.png)
-
+Hosted at Nile University, Egypt 
 
 ---
 
