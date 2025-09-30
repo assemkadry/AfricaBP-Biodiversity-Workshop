@@ -23,4 +23,4 @@ Hosted at Nile University, Egypt
 ---
 
 ## Workshop Schedule
-📄 [Download Workshop Schedule (Word)](materials/workshop_schedule.docx)
+📄 [Download Workshop Schedule (Word)](AfricaBP workshop Agenda_25.docx)
