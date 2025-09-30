@@ -12,14 +12,14 @@
 ## Workshop Materials
 
 ### 📂 Nextflow
-- 🎞️ [Slides: nf-core](materials/nextflow/slides/nf-core.pptx)  
+- 🎞️ [Slides: nf-core](materials/nextflow/slides/nf-core.pdf)  
 - 📑 [Cheat Sheet: Nextflow](materials/nextflow/cheatsheets/nextflow_cheatsheet.pdf)  
 - 📑 [Cheat Sheet: nf-core](materials/nextflow/cheatsheets/nf-core_cheatsheet.pdf)  
 - 📝 [Nextflow and nf-core Tutorial (Wiki)](../../wiki/Nextflow-and-nf‐core-tutorial)  
 
 ### 📂 Marine Bioinformatics with Galaxy
 - 🎞️ [Slides](materials/galaxy/slides/Introduction%20to%20Galaxy.pdf)  
-- 📑 [Cheat Sheet: Metabarcoding](materials/galaxy/cheatsheets/galaxy_metabarcoding.pdf)
+- 📑 [Cheat Sheet: Metagenomics](materials/galaxy/cheatsheets/galaxy_metabarcoding.pdf)
 - 📝 [Tutorial](materials/galaxy/tutorial/galaxy_tutorial.md)
 
 ---
