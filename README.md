@@ -26,7 +26,4 @@ Hosted at Nile University, Egypt
 ## Workshop Schedule
 📄 [Download Workshop Schedule (Word)](AfricaBP%20workshop%20Agenda_25.docx)
 
----
 
-## 📚 Wiki Navigation
-Visit the [Workshop Wiki](../../wiki) for step-by-step tutorials and hands-on exercises.  
