@@ -15,8 +15,10 @@ Hosted at Nile University, Egypt
 - 📝 [Nextflow and nf-core Tutorial (Wiki)](../../wiki/Nextflow-and-nf‐core-tutorial)  
 
 ### 📂 Marine Bioinformatics with Galaxy
-- 🎞️ [Slides](materials/galaxy/slides/galaxy_workshop.pptx)  
-- 📑 [Cheat Sheet: Metabarcoding](materials/galaxy/cheatsheets/galaxy_metabarcoding.pdf)  
+- 🎞️ [Slides](materials/galaxy/slides/Introduction%20to%20Galaxy.pdf)  
+- 📑 [Cheat Sheet: Metabarcoding](materials/galaxy/cheatsheets/galaxy_metabarcoding.pdf)
+- 📝 [Tutorial](materials/galaxy/tutorial/galaxy_tutorial.md)
+
 
 
 ---
