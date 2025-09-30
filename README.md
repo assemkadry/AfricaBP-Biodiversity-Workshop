@@ -5,6 +5,10 @@
 <p align="center">Hosted at <b>Nile University, Egypt</b></p>
 
 
+
+---
+
+
 ## Workshop Materials
 
 ### 📂 Nextflow
@@ -17,7 +21,6 @@
 - 🎞️ [Slides](materials/galaxy/slides/Introduction%20to%20Galaxy.pdf)  
 - 📑 [Cheat Sheet: Metabarcoding](materials/galaxy/cheatsheets/galaxy_metabarcoding.pdf)
 - 📝 [Tutorial](materials/galaxy/tutorial/galaxy_tutorial.md)
-
 
 
 ---
