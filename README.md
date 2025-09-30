@@ -9,7 +9,6 @@ Hosted at Nile University, Egypt
 ## Workshop Materials
 
 ### 📂 Nextflow
-- 🎞️ [Slides: Nextflow Workshop](materials/nextflow/slides/nextflow_workshop.pptx)  
 - 🎞️ [Slides: nf-core](materials/nextflow/slides/nf-core.pptx)  
 - 📑 [Cheat Sheet: Nextflow](materials/nextflow/cheatsheets/nextflow_cheatsheet.pdf)  
 - 📑 [Cheat Sheet: nf-core](materials/nextflow/cheatsheets/nf-core_cheatsheet.pdf)  
