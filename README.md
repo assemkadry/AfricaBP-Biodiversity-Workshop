@@ -4,11 +4,6 @@
 
 Hosted at **Nile University, Egypt** 
 
-**Under African Biogenome Project (AfricaBP) Open Institute For Genomics And Bioinformatics – North African Workshop**
-
-
-Hosted at **Nile University, Egypt** 
-
 ---
 
 ## Workshop Materials
