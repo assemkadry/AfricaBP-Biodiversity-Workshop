@@ -12,8 +12,9 @@
 ## Workshop Materials
 
 ### 📂 Nextflow
-- 🎞️ [Slides: nf-core](materials/nextflow/slides/nf-core.pdf)  
-- 📑 [Cheat Sheet: Nextflow](materials/nextflow/cheatsheets/nextflow_cheatsheet.pdf)  
+- 🖥️ [Nextflow Introduction](materials/nextflow/Slides/Nextflow_Intro.pdf)  
+- 📑 [Cheat Sheet: Nextflow](materials/nextflow/cheatsheets/nextflow_cheatsheet.pdf)
+- 🖥️ [nf-core Introduction](materials/nextflow/Slides/nf-core.pdf)
 - 📑 [Cheat Sheet: nf-core](materials/nextflow/cheatsheets/nf-core_cheatsheet.pdf)  
 - 📝 [Nextflow and nf-core Tutorial (Wiki)](../../wiki/Nextflow-and-nf‐core-tutorial)  
 
